@@ -4,6 +4,7 @@ import com.backbase.bestPictureAwards.enums.AwardStatusEnum;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 
@@ -11,6 +12,7 @@ import javax.persistence.*;
 @Table(name = "academy_awards_temp")
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 public class AcademyAward {
 
@@ -29,10 +31,16 @@ public class AcademyAward {
     //todo pole do ocen filmow, logika -> zliczane i wyciagana srednia
     private Double rating;
     private Long votesNumber;
-    //todo to pole bedzie dzialac ale najpierw parser stringa na inta, narazie wylaczone
+
 //    private Integer boxValue;
+    //todo to pole bedzie dzialac ale najpierw parser stringa na inta, narazie wylaczone
+    //todo zamiana z jsona kwoty na Integera
+/*    String boxOffice = "$70,099,045";
+    Integer boxOffice1 = Integer.valueOf(boxOffice.replaceAll("[^0-9]", ""));*/
 
     //todo jesli w requestcie w tytule filmu bedzie spacja to zamieniam na znak '+'
+/*    String movieTitle = "Kill Bill 2";
+    String movieTitleParsedToPathVariable = movieTitle.replaceAll("\\s+","+");*/
 
 
     /*taski
@@ -43,4 +51,15 @@ public class AcademyAward {
 
      3) dostarczanie ich listy 10 najwyżej ocenianych filmów uporządkowanych według wartości kasowej.
      */
+
+//todo do dokumentacji sqlka
+/*    CREATE TABLE academy_awards (
+            id bigint NOT NULL AUTO_INCREMENT,
+            year VARCHAR(20) NOT NULL,
+    category VARCHAR(255) NOT NULL,
+    nominee VARCHAR(1000) NOT NULL,
+    additional_info VARCHAR(1000) NOT NULL,
+    awarded VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
+);*/
 }
