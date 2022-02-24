@@ -33,6 +33,11 @@ public class AcademyAwardService {
         return academyAwards;
     }
 
+    public List<AcademyAward> findAllBestPictureCategoryMovies() {
+        List<AcademyAward> academyAwards = academyAwardRepository.findAcademyAwardByAwarded(configProperties.getCategory());
+        return academyAwards;
+    }
+
     //todo implementacja
     //    metoda sprawdzajaca baze i omdb (
     //      potrzebuje uderzyc do bazy za pomocą tytułu (potestować jak baza czyta male/duze litery i jakies apostrofy, kropki itd.)

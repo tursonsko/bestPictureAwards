@@ -31,10 +31,20 @@ public class AcademyAwardController {
         }
     }
 
-    @GetMapping("/")
-    public ResponseEntity<List<AcademyAward>> findOneBrokerSettingsById() {
+    @GetMapping("/bestPicAndAwarded")
+    public ResponseEntity<List<AcademyAward>> findAllAwardedAndBestPictureCatagory() {
         try {
-            return new ResponseEntity<List<AcademyAward>>(academyAwardService.findAllAwardedAndBestPictureCatagory(), HttpStatus.OK);
+            return new ResponseEntity<>(academyAwardService.findAllAwardedAndBestPictureCatagory(), HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/bestPicture")
+    public ResponseEntity<List<AcademyAward>> findAllBestPictureCategoryMovies() {
+        try {
+            return new ResponseEntity<>(academyAwardService.findAllBestPictureCategoryMovies(), HttpStatus.OK);
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
