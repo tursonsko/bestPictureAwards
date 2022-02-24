@@ -12,3 +12,7 @@ external:
   host:
     address: https://www.omdbapi.com/
 #    api_key: ca34112e -->> nie bedzie w propertisach, testowo tylko
+
+consts:
+  awarded_type: "YES"
+  category: Best Picture
