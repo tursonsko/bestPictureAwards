@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  omdb-db:
+    container_name: omdb
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: haselko
+      MYSQL_DATABASE: omdb-db
+    ports:
+      - 3307:3306
+    volumes:
+      - omdb-volume:/var/lib/mysql
+
+volumes:
+  omdb-volume:
