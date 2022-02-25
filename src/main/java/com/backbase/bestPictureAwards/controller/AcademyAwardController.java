@@ -58,4 +58,15 @@ public class AcademyAwardController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/test")
+    public ResponseEntity<String> checkIfIsAwardedBestPicture() {
+        try {
+            academyAwardService.checkIfIsAwardedBestPicture();
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
 }

@@ -156,7 +156,18 @@ public class AcademyAwardService {
     }
 
     //todo 1 zadanie - sprawdzenie czy film po tytule wygral oscara - tylko z bazy zapytanie, bez API
+    // TUTAJ ZROBIC Z RESTEM
+
     public void checkIfIsAwardedBestPicture() {
+        AcademyAward movie = academyAwardRepository.findAcademyAwardByNomineeAndCategory("Black Swan", "Best Picture")
+                .orElseThrow(() -> new RuntimeException("Movie not found"));
+        log.info(movie.getAwarded().name());
+        if(movie.getAwarded().equals(AwardStatusEnum.YES)) {
+            log.info("film wygral oscara");
+        } else {
+            log.info("film NIEEEEEE wygral oscara");
+
+        }
     }
 
 

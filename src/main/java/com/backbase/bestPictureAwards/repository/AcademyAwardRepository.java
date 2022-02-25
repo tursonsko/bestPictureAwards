@@ -18,4 +18,6 @@ public interface AcademyAwardRepository extends JpaRepository<AcademyAward, Long
     List<AcademyAward> findAcademyAwardByAwarded(String category);
 
     List<AcademyAward> findAcademyAwardByNomineeInAndCategory(List<String> movieTitles, String category);
+
+    Optional<AcademyAward> findAcademyAwardByNomineeAndCategory(String movieTitle, String category);
 }
