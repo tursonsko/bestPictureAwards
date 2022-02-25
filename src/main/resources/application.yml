@@ -8,11 +8,11 @@ spring:
     generate-ddl: true
     show-sql: true
 
-external:
-  host:
-    address: https://www.omdbapi.com/
-#    api_key: ca34112e -->> nie bedzie w propertisach, testowo tylko
-
 consts:
-  awarded_type: "YES"
-  category: Best Picture
+  awardedTypeYes: "YES"
+  awardedTypeTest: "TEST"
+  categoryBestPicture: "Best Picture"
+  omdbApiUrl: "https://www.omdbapi.com/"
+  omdbApiTitleParamName: "t"
+  omdbApiKeyParamName: "apikey"
+#  api_key: ca34112e -->> nie bedzie w propertisach, testowo tylko

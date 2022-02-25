@@ -10,6 +10,10 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 public class ConfigProperties {
-    private String awarded_type;
-    private String category;
+    private String awardedTypeYes;
+    private String awardedTypeTest;
+    private String categoryBestPicture;
+    private String omdbApiUrl;
+    private String omdbApiTitleParamName;
+    private String omdbApiKeyParamName;
 }

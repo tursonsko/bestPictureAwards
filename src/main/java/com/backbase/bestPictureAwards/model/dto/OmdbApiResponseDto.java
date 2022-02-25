@@ -13,7 +13,7 @@ import lombok.*;
 public class OmdbApiResponseDto {
 
     @JsonProperty("Title")
-    public String title;
+    private String title;
     @JsonProperty("BoxOffice")
-    public String boxOffice;
+    private String boxOffice;
 }

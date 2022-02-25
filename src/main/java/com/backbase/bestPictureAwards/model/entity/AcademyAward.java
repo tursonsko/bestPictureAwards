@@ -9,7 +9,7 @@ import lombok.ToString;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "academy_awards")
+@Table(name = "academy_awards_temp")
 @Getter
 @Setter
 @ToString
@@ -39,9 +39,8 @@ public class AcademyAward {
     @Column(nullable = false)
     private Long votesNumber;
 
-//    @Column(nullable = false)
-//    private Integer boxValue;
-    //todo to pole bedzie dzialac ale najpierw parser stringa na inta, narazie wylaczone
+    @Column(nullable = false)
+    private Integer boxOffice;
 
 
     /*taski
