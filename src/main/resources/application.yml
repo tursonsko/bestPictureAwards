@@ -15,4 +15,5 @@ consts:
   omdbApiUrl: "https://www.omdbapi.com/"
   omdbApiTitleParamName: "t"
   omdbApiKeyParamName: "apikey"
-#  api_key: ca34112e -->> nie bedzie w propertisach, testowo tylko
+#  api_key: ca34112e -->> nie bedzie w propertisach, testowo tylko mniej niz 500 zapytan
+# apikey: 4a9139fc 1000

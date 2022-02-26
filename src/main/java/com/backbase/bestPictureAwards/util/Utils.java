@@ -1,5 +1,7 @@
 package com.backbase.bestPictureAwards.util;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.regex.Pattern;
 
 public final class Utils {
@@ -25,7 +27,7 @@ public final class Utils {
         return text.replaceAll("\\s+","+");
     }
 
-    public static int parseValueToNumeric(String value) {
+    public static Integer parseValueToNumeric(String value) {
         if (isStringNullOrEmpty(value)) {
             return 0;
         }
@@ -36,7 +38,14 @@ public final class Utils {
         }
 
         return 0;
+    }
 
+    public static Double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = BigDecimal.valueOf(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
 }

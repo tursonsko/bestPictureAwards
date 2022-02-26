@@ -9,7 +9,7 @@ import lombok.ToString;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "academy_awards_temp")
+@Table(name = "academy_awards")
 @Getter
 @Setter
 @ToString
@@ -18,28 +18,31 @@ public class AcademyAward {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column
     private Long id;
 
     //pola z .csv
-    @Column
+    @Column(nullable = false, columnDefinition = "varchar(20)")
     private String year;
-    @Column
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     private String category;
-    @Column
+    @Column(nullable = false, columnDefinition = "varchar(1000)")
     private String nominee;
-    @Column
+    @Column(nullable = false, columnDefinition = "varchar(1000)")
     private String additionalInfo;
-    @Column
+    @Column(nullable = false, columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
     private AwardStatusEnum awarded;
 
     //todo pole do ocen filmow, logika -> zliczane i wyciagana srednia
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "double default 0")
     private Double rating;
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "bigint default 0")
+    private Long ratingTotalSum;
+    @Column(nullable = false, columnDefinition = "bigint default 0")
     private Long votesNumber;
 
-    @Column(nullable = false)
+//    @Column(nullable = false, columnDefinition = "int default 0")
     private Integer boxOffice;
 
 
@@ -53,15 +56,20 @@ public class AcademyAward {
      */
 
 //todo do dokumentacji sqlka
-/*    CREATE TABLE academy_awards (
-            id bigint NOT NULL AUTO_INCREMENT,
-            year VARCHAR(20) NOT NULL,
-    category VARCHAR(255) NOT NULL,
-    nominee VARCHAR(1000) NOT NULL,
-    additional_info VARCHAR(1000) NOT NULL,
-    awarded VARCHAR(255) NOT NULL,
-    PRIMARY KEY (id)
-);*/
+// todo najpierw odpalic ten skrypt -> potem csv import -> potem odpalic apke
+/*    CREATE TABLE test_table (
+        id bigint NOT NULL AUTO_INCREMENT,
+        year varchar(20) NOT NULL,
+        category varchar(255) NOT NULL,
+        nominee varchar(1000) NOT NULL,
+        additional_info varchar(1000) NOT NULL,
+        awarded varchar(255) NOT NULL,
+        rating double NOT NULL DEFAULT 0,
+        votes_number bigint NOT NULL DEFAULT 0,
+        box_office int NOT NULL DEFAULT 0,
+        PRIMARY KEY (id)
+      )
+;*/
 
 //response z omdb api
 /*    {

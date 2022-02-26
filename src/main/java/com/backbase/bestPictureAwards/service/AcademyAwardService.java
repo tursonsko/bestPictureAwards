@@ -2,7 +2,11 @@ package com.backbase.bestPictureAwards.service;
 
 import com.backbase.bestPictureAwards.configuration.ConfigProperties;
 import com.backbase.bestPictureAwards.enums.AwardStatusEnum;
-import com.backbase.bestPictureAwards.model.dto.OmdbApiResponseDto;
+import com.backbase.bestPictureAwards.model.dto.request.AwardedMovieRequestDto;
+import com.backbase.bestPictureAwards.model.dto.request.RatedMovieRequestDto;
+import com.backbase.bestPictureAwards.model.dto.response.OmdbApiResponseDto;
+import com.backbase.bestPictureAwards.model.dto.response.AwardedMovieResponseDto;
+import com.backbase.bestPictureAwards.model.dto.response.RatedMovieResponseDto;
 import com.backbase.bestPictureAwards.model.entity.AcademyAward;
 import com.backbase.bestPictureAwards.repository.AcademyAwardRepository;
 import com.backbase.bestPictureAwards.util.Utils;
@@ -15,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.annotation.PostConstruct;
 import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -56,6 +59,7 @@ public class AcademyAwardService {
 
     public List<AcademyAward> findAllBestPictureCategoryMovies() {
         List<AcademyAward> academyAwards = academyAwardRepository.findAcademyAwardByAwarded(configProperties.getCategoryBestPicture());
+//        log.info(String.valueOf(academyAwards.size()));
         return academyAwards;
     }
 
@@ -88,7 +92,7 @@ public class AcademyAwardService {
 
     public void fillUpBestPicturesBoxOfficeValue(String apiKey) {
 
-        List<String> bestPicturesTitles = findAllAwardedTestAndBestPictureCatagory().stream()
+        List<String> bestPicturesTitles = findAllBestPictureCategoryMovies().stream()
                 .map(AcademyAward::getNominee)
                 .collect(Collectors.toList());
 
@@ -118,27 +122,70 @@ public class AcademyAwardService {
             if (response == null || response.getBody() == null || !response.getStatusCode().is2xxSuccessful()) {
                 throw new RuntimeException();
             }
-            log.info(gson.toJson(response.getBody()));
+//            log.info(gson.toJson(response.getBody()));
 
             String movieTitleToUpdate = response.getBody().getTitle();
             String boxOfficeValueToParse = response.getBody().getBoxOffice();
             Integer boxOfficeValueToFill = Utils.parseValueToNumeric(boxOfficeValueToParse);
+            ombdResponseDtoMap.put(movieTitleToUpdate, boxOfficeValueToFill);
+//            ombdResponseDtoMap.entrySet().removeIf(curr -> curr.getKey() == null);
 
             apiResponseList.add(response.getBody());
-            ombdResponseDtoMap.put(movieTitleToUpdate, boxOfficeValueToFill);
-//            AcademyAward academyAwardToUpdate = academyAwardRepository.findAcademyAwardByNominee(movieTitleToUpdate)
-//                    .orElseThrow(() -> new RuntimeException("Movie not found"));
 
         });
-        log.info(String.valueOf(ombdResponseDtoMap));
+        apiResponseList.removeIf(omdbApiResponseDto -> omdbApiResponseDto.getTitle() == null);
 
-        for (Map.Entry<String, Integer> entry : ombdResponseDtoMap.entrySet()) {
-            System.out.println(entry.getKey() + ":" + entry.getValue());
-        }
-        List<String> movieTitles = new ArrayList<>(ombdResponseDtoMap.keySet());
-        List<Integer> movieBoxOffice = new ArrayList<>(ombdResponseDtoMap.values());
-        log.info(String.valueOf(movieTitles));
-        log.info(String.valueOf(movieBoxOffice));
+
+//        Map<String, Integer> apiResponseMap = apiResponseList.stream()
+//                .collect(Collectors.toMap(OmdbApiResponseDto::getTitle.concat(OmdbApiResponseDto::getYear),
+//                        omdbApiResponseDto -> Utils.parseValueToNumeric(omdbApiResponseDto.getBoxOffice()),
+//                        (key1, key2) -> key1));
+
+        /*
+        * lista obiektow (title, year, box office) -> foreach -> obiekt.title i obiekt.year i tym uderzam do bazy -> jesli znajdzie to w tym filmie zapisac boxOffice, zebym mogl z bazy wyszukac liste po title i year a potem zebym mogl zapisac w bazie boxOffice tego filmu ktory znajde w jsonie?
+        *
+        *
+        * Cleopatra z 1934 (N/A) i 1963(57,777,778) - czyli trzeba zapytac api na podstawie tytlu + yar
+        *
+        *
+        *
+        * sortowanie top 10 filmow
+        * then comparing
+        * */
+                
+                
+//        apiResponseList.forEach(System.out::println);
+//        for (Map.Entry<String, Integer> entry : apiResponseMap.entrySet()) {
+//            System.out.println(entry.getKey() + " -> " + entry.getValue());
+//        }
+
+        List<OmdbApiResponseDto> list = apiResponseList.stream().filter(omdbApiResponseDto ->
+            omdbApiResponseDto.getTitle().equals("Cleopatra")).collect(Collectors.toList());
+
+
+        list.sort(
+                Comparator.comparing((OmdbApiResponseDto b) -> b.getTitle())
+                        .thenComparing((OmdbApiResponseDto b) -> b.getBoxOffice(), Comparator.reverseOrder()));
+        System.out.println(list);
+
+        /*
+        jesli chce porywnaw obiekty za pomoca Comparator to musze zaimplementoweac Comparator i nadpisac metode compare(a,b) -> a - b - ascending (b - a descending)
+        Comparable ma metode compareTo a.compareTo(b)
+        * */
+
+//        log.info(String.valueOf(ombdResponseDtoMap));
+
+        //printowanie mapy responsow wszystkich
+//        for (Map.Entry<String, Integer> entry : ombdResponseDtoMap.entrySet()) {
+//            System.out.println(entry.getKey() + ":" + entry.getValue());
+//        }
+        List<String> movieTitles = new ArrayList<>(ombdResponseDtoMap.keySet()).stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
+        movieTitles.forEach(System.out::println);
+//        List<Integer> movieBoxOffice = new ArrayList<>(ombdResponseDtoMap.values());
+//        log.info(String.valueOf(movieTitles));
+//        log.info(String.valueOf(movieBoxOffice));
 
         List<AcademyAward> foundMoviesByTitlesFromOmdbApi = academyAwardRepository.findAcademyAwardByNomineeInAndCategory(movieTitles, configProperties.getCategoryBestPicture());
         foundMoviesByTitlesFromOmdbApi.forEach(movie -> {
@@ -148,26 +195,37 @@ public class AcademyAwardService {
 
         academyAwardRepository.saveAll(foundMoviesByTitlesFromOmdbApi);
 
-        foundMoviesByTitlesFromOmdbApi.forEach(System.out::println);
+//        foundMoviesByTitlesFromOmdbApi.forEach(System.out::println);
         log.info("koniec");
+
+        System.out.println("-------------------------");
+        //printy do sprawdzenia czego brakuje - 5 pol
+        //mapa 479 sztuk
+//        for (Map.Entry<String, Integer> entry : apiResponseMap.entrySet()) {
+//            System.out.println(entry.getKey());
+//        }
+        System.out.println("-------------------------");
+        System.out.println("-------------------------");
+
+        apiResponseList.forEach(omdbApiResponseDto -> {
+            System.out.println(omdbApiResponseDto.getTitle());
+        });
+
+        System.out.println("-------------------------");
+
 
 
 
     }
 
-    //todo 1 zadanie - sprawdzenie czy film po tytule wygral oscara - tylko z bazy zapytanie, bez API
-    // TUTAJ ZROBIC Z RESTEM
 
-    public void checkIfIsAwardedBestPicture() {
-        AcademyAward movie = academyAwardRepository.findAcademyAwardByNomineeAndCategory("Black Swan", "Best Picture")
+
+    //sprawdzanie czy wygrakl czy nie oscara - done
+    public AwardedMovieResponseDto checkIfIsAwardedBestPicture(AwardedMovieRequestDto dto) {
+        AcademyAward movie = academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(dto.getMovieTitle(), String.valueOf(dto.getYear()), configProperties.getCategoryBestPicture())
                 .orElseThrow(() -> new RuntimeException("Movie not found"));
-        log.info(movie.getAwarded().name());
-        if(movie.getAwarded().equals(AwardStatusEnum.YES)) {
-            log.info("film wygral oscara");
-        } else {
-            log.info("film NIEEEEEE wygral oscara");
-
-        }
+        log.info(movie.getNominee() + " -> " + movie.getAwarded().name());
+        return new AwardedMovieResponseDto(movie);
     }
 
 
@@ -177,8 +235,32 @@ public class AcademyAwardService {
     public void findTenTopRatedMoviesSortedByBoxOfficeValue() {
     }
 
-    //todo 3 zadanie - ocena filmu 1-10 skala double i
-    // srednia z 1 miejscem po przecinku (wszystkie Best Picture filmy - sami zwyciezcy z bazy)
-    public void giveRateForNomineeToBestPictureMovie() {
+    //srednia - done
+    public RatedMovieResponseDto giveRateForNomineeToBestPictureMovie(RatedMovieRequestDto dto) {
+        AcademyAward movie = academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(dto.getMovieTitle(), String.valueOf(dto.getYear()), configProperties.getCategoryBestPicture())
+                .orElseThrow(() -> new RuntimeException("Movie not found"));
+        Long ratingTotalSum = movie.getRatingTotalSum();
+        Integer providedRate = dto.getRate();
+        Long votesNumber = movie.getVotesNumber();
+        Double newRating = Utils.round(calculateMovieRating(ratingTotalSum, providedRate, votesNumber), 1);
+        movie.setRating(newRating);
+        movie.setRatingTotalSum(ratingTotalSum + providedRate);
+        movie.setVotesNumber(votesNumber + 1L);
+        academyAwardRepository.save(movie);
+        return new RatedMovieResponseDto(movie);
+    }
+
+    private Double calculateMovieRating(Long ratingTotalSum, Integer providedRate, Long votesNumber) {
+        if (providedRate <= 10 && providedRate >= 1) {
+            if (votesNumber < 0) {
+                log.info("nie moze byc liczba ocen mmiejsza niz 0");
+                throw new RuntimeException("nie moze byc liczba ocen mmiejsza niz 0");
+            }
+            return votesNumber == 0 ? Double.valueOf(providedRate) : (double)(ratingTotalSum + providedRate) / (votesNumber + 1L);
+        } else {
+            log.info("wartosci tylko pomiedzy 1 a 10");
+            throw new RuntimeException("wartosci tylko pomiedzy 1 a 10");
+        }
     }
 }
+// 9 8 6 4 5 3 1 9 = 45 / 8 = 5.625 (5.6 powinno byc)

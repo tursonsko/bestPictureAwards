@@ -1,5 +1,9 @@
 package com.backbase.bestPictureAwards.controller;
 
+import com.backbase.bestPictureAwards.model.dto.request.AwardedMovieRequestDto;
+import com.backbase.bestPictureAwards.model.dto.request.RatedMovieRequestDto;
+import com.backbase.bestPictureAwards.model.dto.response.AwardedMovieResponseDto;
+import com.backbase.bestPictureAwards.model.dto.response.RatedMovieResponseDto;
 import com.backbase.bestPictureAwards.model.entity.AcademyAward;
 import com.backbase.bestPictureAwards.service.AcademyAwardService;
 import org.springframework.http.HttpStatus;
@@ -28,7 +32,7 @@ public class AcademyAwardController {
         }
     }
 
-    @GetMapping("/bestPicAndAwarded")
+    @GetMapping("/bestPictureAndAwarded")
     public ResponseEntity<List<AcademyAward>> findAllAwardedAndBestPictureCatagory() {
         try {
             return new ResponseEntity<>(academyAwardService.findAllAwardedAndBestPictureCatagory(), HttpStatus.OK);
@@ -59,11 +63,20 @@ public class AcademyAwardController {
         }
     }
 
-    @GetMapping("/test")
-    public ResponseEntity<String> checkIfIsAwardedBestPicture() {
+    @PostMapping("/checkIfMovieIsAwarded")
+    public ResponseEntity<AwardedMovieResponseDto> checkIfIsAwardedBestPicture(@RequestBody AwardedMovieRequestDto dto) {
         try {
-            academyAwardService.checkIfIsAwardedBestPicture();
-            return new ResponseEntity<>(HttpStatus.OK);
+            return new ResponseEntity<>(academyAwardService.checkIfIsAwardedBestPicture(dto), HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/rateMovie")
+    public ResponseEntity<RatedMovieResponseDto> giveRateForNomineeToBestPictureMovie(@RequestBody RatedMovieRequestDto dto) {
+        try {
+            return new ResponseEntity<>(academyAwardService.giveRateForNomineeToBestPictureMovie(dto), HttpStatus.OK);
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

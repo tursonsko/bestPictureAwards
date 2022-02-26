@@ -17,7 +17,10 @@ public interface AcademyAwardRepository extends JpaRepository<AcademyAward, Long
     @Query("FROM AcademyAward a WHERE a.category = ?1")
     List<AcademyAward> findAcademyAwardByAwarded(String category);
 
+//    List<AcademyAward> findAcademyAwardByNomineeInAndCategory(List<String> movieTitles, String category);
+    @Query("FROM AcademyAward a WHERE LOWER(a.nominee) IN ?1 AND a.category = ?2")
     List<AcademyAward> findAcademyAwardByNomineeInAndCategory(List<String> movieTitles, String category);
 
-    Optional<AcademyAward> findAcademyAwardByNomineeAndCategory(String movieTitle, String category);
+    @Query("FROM AcademyAward a WHERE a.nominee = ?1 AND a.year LIKE %?2% AND a.category = ?3")
+    Optional<AcademyAward> findAcademyAwardByNomineeAndYearLikeAndCategory(String movieTitle, String year, String category);
 }
