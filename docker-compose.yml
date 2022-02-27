@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  omdb-db:
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: haselko
+      MYSQL_DATABASE: omdb-db
+    ports:
+      - 3307:3306
+    volumes:
+      - omdb-volume:/var/lib/mysql
+  omdb-app:
+    depends_on:
+      - omdb-db
+    image: bestpicturewards
+    build:
+      context: ../Pulpit/OMDB/Nowy folder
+    ports:
+      - 8081:8080
+
+volumes:
+  omdb-volume:
+
+
