@@ -30,5 +30,4 @@ public class TopTenMoviesResponseDto {
         this.rating = academyAward.getRating();
         this.boxOffice = academyAward.getBoxOffice();
     }
-
 }

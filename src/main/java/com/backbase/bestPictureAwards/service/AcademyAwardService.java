@@ -12,15 +12,12 @@ import com.backbase.bestPictureAwards.model.entity.AcademyAward;
 import com.backbase.bestPictureAwards.repository.AcademyAwardRepository;
 import com.backbase.bestPictureAwards.util.Utils;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,20 +27,14 @@ public class AcademyAwardService {
 
     private final AcademyAwardRepository academyAwardRepository;
     private final ConfigProperties configProperties;
+    private final RestTemplate restTemplateWithConnectionAndReadTimeout;
+    private final Gson gsonWithPrettyPrinting;
 
-    private final RestTemplate restTemplate = new RestTemplateBuilder()
-            .setConnectTimeout(Duration.ofMillis(60_000))
-            .setReadTimeout(Duration.ofMillis(60_000))
-            .build();
-
-    private final Gson gson = new GsonBuilder()
-            .setPrettyPrinting()
-            .setDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
-            .create();
-
-    public AcademyAwardService(AcademyAwardRepository academyAwardRepository, ConfigProperties configProperties) {
+    public AcademyAwardService(AcademyAwardRepository academyAwardRepository, ConfigProperties configProperties, RestTemplate restTemplateWithConnectionAndReadTimeout, Gson gsonWithPrettyPrinting) {
         this.academyAwardRepository = academyAwardRepository;
         this.configProperties = configProperties;
+        this.restTemplateWithConnectionAndReadTimeout = restTemplateWithConnectionAndReadTimeout;
+        this.gsonWithPrettyPrinting = gsonWithPrettyPrinting;
     }
 
     public AcademyAward findAcademyAwardById(Long id) {
@@ -54,20 +45,16 @@ public class AcademyAwardService {
     }
 
     public List<AcademyAward> findAllAwardedAndBestPictureCatagory() {
-        List<AcademyAward> academyAwards = academyAwardRepository.findAcademyAwardByAwardedAndCategory(AwardStatusEnum.valueOf(configProperties.getAwardedTypeYes()), configProperties.getCategoryBestPicture());
-        return academyAwards;
+        return academyAwardRepository.findAcademyAwardByAwardedAndCategory(AwardStatusEnum.valueOf(configProperties.getAwardedTypeYes()), configProperties.getCategoryBestPicture());
     }
 
     public List<AcademyAward> findAllBestPictureCategoryMovies() {
-        List<AcademyAward> academyAwards = academyAwardRepository.findAcademyAwardByAwarded(configProperties.getCategoryBestPicture());
-//        log.info(String.valueOf(academyAwards.size()));
-        return academyAwards;
+        return academyAwardRepository.findAcademyAwardByAwarded(configProperties.getCategoryBestPicture());
     }
 
-    //testoa - 4 rekordy - 2 z boxOffice, 2 z wartoscia N/A
+    //testowe - 4 rekordy - 2 z boxOffice, 2 z wartoscia N/A
     public List<AcademyAward> findAllAwardedTestAndBestPictureCatagory() {
-        List<AcademyAward> academyAwards = academyAwardRepository.findAcademyAwardByAwardedAndCategory(AwardStatusEnum.valueOf(configProperties.getAwardedTypeTest()), configProperties.getCategoryBestPicture());
-        return academyAwards;
+        return academyAwardRepository.findAcademyAwardByAwardedAndCategory(AwardStatusEnum.valueOf(configProperties.getAwardedTypeTest()), configProperties.getCategoryBestPicture());
     }
 
     public void fillUpBestPicturesBoxOfficeValue(String apiKey) {
@@ -95,14 +82,14 @@ public class AcademyAwardService {
             params.put(configProperties.getOmdbApiKeyParamName(), apiKey);
             ResponseEntity<OmdbApiResponseDto> response = null;
             try {
-                response = restTemplate.exchange(urlTemplate, HttpMethod.GET, entity, OmdbApiResponseDto.class, params);
+                response = restTemplateWithConnectionAndReadTimeout.exchange(urlTemplate, HttpMethod.GET, entity, OmdbApiResponseDto.class, params);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
             if (response == null || response.getBody() == null || !response.getStatusCode().is2xxSuccessful()) {
                 throw new RuntimeException();
             }
-//            log.info(gson.toJson(response.getBody()));
+            log.info(gsonWithPrettyPrinting.toJson(response.getBody()));
 
             String movieTitleToUpdate = response.getBody().getTitle();
             String boxOfficeValueToParse = response.getBody().getBoxOffice();
@@ -194,7 +181,7 @@ public class AcademyAwardService {
         System.out.println("-------------------------");
     }
 
-    //sprawdzanie czy wygral czy nie oscara - done
+    //::::DONE::::sprawdzanie czy wygral czy nie oscara - done
     public AwardedMovieResponseDto checkIfIsAwardedBestPicture(AwardedMovieRequestDto dto) {
         AcademyAward movie = academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(dto.getMovieTitle(), String.valueOf(dto.getYear()), configProperties.getCategoryBestPicture())
                 .orElseThrow(() -> new RuntimeException("Movie not found"));
@@ -203,7 +190,7 @@ public class AcademyAwardService {
     }
 
 
-    //todo top 10 po ratingu a potem po box office
+    //::::DONE::::top 10 po ratingu a potem po box office -
     public List<TopTenMoviesResponseDto> findTenTopRatedMoviesSortedByBoxOfficeValue() {
         List<TopTenMoviesResponseDto> list = findAllBestPictureCategoryMovies().stream()
                 .map(TopTenMoviesResponseDto::new)
@@ -215,7 +202,7 @@ public class AcademyAwardService {
         return list;
     }
 
-    //srednia - done
+    //::::DONE::::srednia - done
     public RatedMovieResponseDto giveRateForNomineeToBestPictureMovie(RatedMovieRequestDto dto) {
         AcademyAward movie = academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(dto.getMovieTitle(), String.valueOf(dto.getYear()), configProperties.getCategoryBestPicture())
                 .orElseThrow(() -> new RuntimeException("Movie not found"));

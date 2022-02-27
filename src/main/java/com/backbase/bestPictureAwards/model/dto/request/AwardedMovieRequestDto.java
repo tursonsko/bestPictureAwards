@@ -14,5 +14,4 @@ public class AwardedMovieRequestDto {
     private String movieTitle;
     @JsonProperty("year")
     private Integer year;
-
 }

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 public class ConfigProperties {
+
     private String awardedTypeYes;
     private String awardedTypeTest;
     private String categoryBestPicture;

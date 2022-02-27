@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -54,6 +53,7 @@ public class AcademyAwardController {
         }
     }
 
+    //todo task 0
     @GetMapping("/fillUpBoxOfficeValue")
     public ResponseEntity<String> fillUpBestPicturesBoxOfficeValue(@RequestParam(name = "apiKey") String apiKey) {
         try {
@@ -65,6 +65,7 @@ public class AcademyAwardController {
         }
     }
 
+    //task 1
     @PostMapping("/checkIfMovieIsAwarded")
     public ResponseEntity<AwardedMovieResponseDto> checkIfIsAwardedBestPicture(@RequestBody AwardedMovieRequestDto dto) {
         try {
@@ -75,6 +76,7 @@ public class AcademyAwardController {
         }
     }
 
+    //task 2
     @PostMapping("/rateMovie")
     public ResponseEntity<RatedMovieResponseDto> giveRateForNomineeToBestPictureMovie(@RequestBody RatedMovieRequestDto dto) {
         try {
@@ -85,6 +87,7 @@ public class AcademyAwardController {
         }
     }
 
+    //task 3
     @GetMapping("/topTenMoviesSortedByBoxOfficeValue")
     public ResponseEntity<List<TopTenMoviesResponseDto>> findTenTopRatedMoviesSortedByBoxOfficeValue() {
         try {

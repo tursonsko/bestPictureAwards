@@ -33,5 +33,4 @@ public class RatedMovieResponseDto {
         this.rating = academyAward.getRating();
         this.votesNumber = academyAward.getVotesNumber();
     }
-
 }

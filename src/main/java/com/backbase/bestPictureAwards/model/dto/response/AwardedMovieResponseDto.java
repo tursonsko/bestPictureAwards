@@ -13,6 +13,7 @@ import lombok.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AwardedMovieResponseDto {
 
+    //todo moze jakos inaczej to zrobic
     private static final String MOVIE_AWARDED_INFO = "An Oscar-winning movie";
     private static final String MOVIE_NOT_AWARDED_INFO = "The movie did not win an Oscar";
 
