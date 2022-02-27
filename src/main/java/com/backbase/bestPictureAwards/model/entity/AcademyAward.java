@@ -9,7 +9,7 @@ import lombok.ToString;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "academy_awards_temp")
+@Table(name = "academy_awards")
 @Getter
 @Setter
 @ToString
@@ -17,8 +17,7 @@ import javax.persistence.*;
 public class AcademyAward {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, columnDefinition = "varchar(20)")
@@ -46,6 +45,6 @@ public class AcademyAward {
     @Column(nullable = false, columnDefinition = "bigint default 0")
     private Long votesNumber;
 
-//    @Column(nullable = false, columnDefinition = "int default 0")
+    @Column
     private Integer boxOffice;
 }

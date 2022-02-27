@@ -4,13 +4,14 @@ services:
   omdb-db:
     container_name: omdb
     image: mysql
+    volumes:
+      - ./omdb-db_academy_awards.sql:/docker-entrypoint-initdb.d/dump.sql
+      - omdb:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: haselko
       MYSQL_DATABASE: omdb-db
     ports:
       - 3307:3306
-    volumes:
-      - omdb-volume:/var/lib/mysql
 
 volumes:
-  omdb-volume:
+  omdb:

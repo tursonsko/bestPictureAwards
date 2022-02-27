@@ -151,14 +151,9 @@ public class FillUpDatabaseService {
 
     //hack narazie tak ma byc jesli nie uda sie rozwiazac problemu
     private void changeAllBoxOfficeNullValues() {
-//        List<AcademyAward> listToUpdateNullBoxOfficeValues = findAllBestPictureCategoryMovies().stream()
-//                .filter(academyAward -> academyAward.getBoxOffice() == null)
-//                .peek(academyAward -> academyAward.setBoxOffice(1)) //zmienic na 0 na produkcje
-//                .collect(Collectors.toList());
-
         List<AcademyAward> listToUpdateNullBoxOfficeValues = findAllBestPictureCategoryMovies().stream()
                 .filter(academyAward -> academyAward.getBoxOffice() == null).collect(Collectors.toList());
-                listToUpdateNullBoxOfficeValues.forEach(academyAward -> academyAward.setBoxOffice(1));
+                listToUpdateNullBoxOfficeValues.forEach(academyAward -> academyAward.setBoxOffice(0));
         academyAwardRepository.saveAll(listToUpdateNullBoxOfficeValues);
     }
 }
