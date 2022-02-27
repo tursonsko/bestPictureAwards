@@ -9,17 +9,16 @@ services:
     ports:
       - 3307:3306
     volumes:
-      - omdb-volume:/var/lib/mysql
+      - ./omdb-db_academy_awards.sql:/docker-entrypoint-initdb.d/dump.sql
+      - omdb:/var/lib/mysql
   omdb-app:
     depends_on:
       - omdb-db
-    image: bestpicturewards
+    image: bestpictureawards
     build:
-      context: ../Pulpit/OMDB/Nowy folder
+      context: .
     ports:
-      - 8081:8080
+      - 8080:8080
 
 volumes:
-  omdb-volume:
-
-
+  omdb:
