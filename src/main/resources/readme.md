@@ -8,6 +8,7 @@ CREATE TABLE academy_awards (
     additional_info varchar(1000) NOT NULL,
     awarded varchar(255) NOT NULL,
     rating double NOT NULL DEFAULT 0,
+    rating_total_sum bigint NOT NULL DEFAULT 0,
     votes_number bigint NOT NULL DEFAULT 0,
     box_office int NOT NULL DEFAULT 0,
     PRIMARY KEY (id)

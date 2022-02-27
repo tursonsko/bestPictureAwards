@@ -4,6 +4,7 @@ import com.backbase.bestPictureAwards.model.dto.request.AwardedMovieRequestDto;
 import com.backbase.bestPictureAwards.model.dto.request.RatedMovieRequestDto;
 import com.backbase.bestPictureAwards.model.dto.response.AwardedMovieResponseDto;
 import com.backbase.bestPictureAwards.model.dto.response.RatedMovieResponseDto;
+import com.backbase.bestPictureAwards.model.dto.response.TopTenMoviesResponseDto;
 import com.backbase.bestPictureAwards.model.entity.AcademyAward;
 import com.backbase.bestPictureAwards.service.AcademyAwardService;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -77,6 +79,16 @@ public class AcademyAwardController {
     public ResponseEntity<RatedMovieResponseDto> giveRateForNomineeToBestPictureMovie(@RequestBody RatedMovieRequestDto dto) {
         try {
             return new ResponseEntity<>(academyAwardService.giveRateForNomineeToBestPictureMovie(dto), HttpStatus.OK);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/topTenMoviesSortedByBoxOfficeValue")
+    public ResponseEntity<List<TopTenMoviesResponseDto>> findTenTopRatedMoviesSortedByBoxOfficeValue() {
+        try {
+            return new ResponseEntity<>(academyAwardService.findTenTopRatedMoviesSortedByBoxOfficeValue(), HttpStatus.OK);
         } catch (Exception ex) {
             ex.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

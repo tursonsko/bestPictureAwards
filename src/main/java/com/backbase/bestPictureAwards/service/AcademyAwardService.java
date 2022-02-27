@@ -4,9 +4,10 @@ import com.backbase.bestPictureAwards.configuration.ConfigProperties;
 import com.backbase.bestPictureAwards.enums.AwardStatusEnum;
 import com.backbase.bestPictureAwards.model.dto.request.AwardedMovieRequestDto;
 import com.backbase.bestPictureAwards.model.dto.request.RatedMovieRequestDto;
-import com.backbase.bestPictureAwards.model.dto.response.OmdbApiResponseDto;
 import com.backbase.bestPictureAwards.model.dto.response.AwardedMovieResponseDto;
+import com.backbase.bestPictureAwards.model.dto.response.OmdbApiResponseDto;
 import com.backbase.bestPictureAwards.model.dto.response.RatedMovieResponseDto;
+import com.backbase.bestPictureAwards.model.dto.response.TopTenMoviesResponseDto;
 import com.backbase.bestPictureAwards.model.entity.AcademyAward;
 import com.backbase.bestPictureAwards.repository.AcademyAwardRepository;
 import com.backbase.bestPictureAwards.util.Utils;
@@ -46,7 +47,7 @@ public class AcademyAwardService {
     }
 
     public AcademyAward findAcademyAwardById(Long id) {
-        AcademyAward foundRecord =  academyAwardRepository.findById(id)
+        AcademyAward foundRecord = academyAwardRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("record not found"));
         log.info(foundRecord.toString());
         return foundRecord;
@@ -63,31 +64,10 @@ public class AcademyAwardService {
         return academyAwards;
     }
 
-    //todo implementacja
-    //    metoda sprawdzajaca baze i omdb (
-    //      potrzebuje uderzyc do bazy za pomocą tytułu (potestować jak baza czyta male/duze litery i jakies apostrofy, kropki itd.)
-    //     jesli tytul filmu a bazie && w api && jest awarded:YES w bazie to zwrocic że jest (jakiś model najlepiej dto response)
-
     //testoa - 4 rekordy - 2 z boxOffice, 2 z wartoscia N/A
     public List<AcademyAward> findAllAwardedTestAndBestPictureCatagory() {
         List<AcademyAward> academyAwards = academyAwardRepository.findAcademyAwardByAwardedAndCategory(AwardStatusEnum.valueOf(configProperties.getAwardedTypeTest()), configProperties.getCategoryBestPicture());
         return academyAwards;
-    }
-
-
-
-    //todo zmienic na findAllBestPictureCategoryMovies() = academyAwards
-
-//    @PostConstruct
-    public void addBoxOfficeValuesToBestPictureMovis() {
-        List<AcademyAward> academyAwards = findAllAwardedTestAndBestPictureCatagory();
-        if (academyAwards != null && academyAwards.size() > 0) {
-            List<String> bestPicturesTitles = academyAwards.stream().map(AcademyAward::getNominee)
-                    .collect(Collectors.toList());
-            log.info(String.valueOf(bestPicturesTitles));
-//            fillUpBestPicturesBoxOfficeValue();
-        }
-
     }
 
     public void fillUpBestPicturesBoxOfficeValue(String apiKey) {
@@ -142,25 +122,25 @@ public class AcademyAwardService {
 //                        (key1, key2) -> key1));
 
         /*
-        * lista obiektow (title, year, box office) -> foreach -> obiekt.title i obiekt.year i tym uderzam do bazy -> jesli znajdzie to w tym filmie zapisac boxOffice, zebym mogl z bazy wyszukac liste po title i year a potem zebym mogl zapisac w bazie boxOffice tego filmu ktory znajde w jsonie?
-        *
-        *
-        * Cleopatra z 1934 (N/A) i 1963(57,777,778) - czyli trzeba zapytac api na podstawie tytlu + yar
-        *
-        *
-        *
-        * sortowanie top 10 filmow
-        * then comparing
-        * */
-                
-                
+         * lista obiektow (title, year, box office) -> foreach -> obiekt.title i obiekt.year i tym uderzam do bazy -> jesli znajdzie to w tym filmie zapisac boxOffice, zebym mogl z bazy wyszukac liste po title i year a potem zebym mogl zapisac w bazie boxOffice tego filmu ktory znajde w jsonie?
+         *
+         *
+         * Cleopatra z 1934 (N/A) i 1963(57,777,778) - czyli trzeba zapytac api na podstawie tytlu + yar
+         *
+         *
+         *
+         * sortowanie top 10 filmow
+         * then comparing
+         * */
+
+
 //        apiResponseList.forEach(System.out::println);
 //        for (Map.Entry<String, Integer> entry : apiResponseMap.entrySet()) {
 //            System.out.println(entry.getKey() + " -> " + entry.getValue());
 //        }
 
         List<OmdbApiResponseDto> list = apiResponseList.stream().filter(omdbApiResponseDto ->
-            omdbApiResponseDto.getTitle().equals("Cleopatra")).collect(Collectors.toList());
+                omdbApiResponseDto.getTitle().equals("Cleopatra")).collect(Collectors.toList());
 
 
         list.sort(
@@ -212,15 +192,9 @@ public class AcademyAwardService {
         });
 
         System.out.println("-------------------------");
-
-
-
-
     }
 
-
-
-    //sprawdzanie czy wygrakl czy nie oscara - done
+    //sprawdzanie czy wygral czy nie oscara - done
     public AwardedMovieResponseDto checkIfIsAwardedBestPicture(AwardedMovieRequestDto dto) {
         AcademyAward movie = academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(dto.getMovieTitle(), String.valueOf(dto.getYear()), configProperties.getCategoryBestPicture())
                 .orElseThrow(() -> new RuntimeException("Movie not found"));
@@ -229,10 +203,16 @@ public class AcademyAwardService {
     }
 
 
-    //todo 2 zadanie metoda zwracajaca liste top10 ocenionych filmow
-    // (mozna zreobić osobną kolumnę z ocenami z imdb np,
-    // zebym mial sortowanie po ocenach moich i imdb osobno(?))
-    public void findTenTopRatedMoviesSortedByBoxOfficeValue() {
+    //todo top 10 po ratingu a potem po box office
+    public List<TopTenMoviesResponseDto> findTenTopRatedMoviesSortedByBoxOfficeValue() {
+        List<TopTenMoviesResponseDto> list = findAllBestPictureCategoryMovies().stream()
+                .map(TopTenMoviesResponseDto::new)
+                .sorted(Comparator.comparing(TopTenMoviesResponseDto::getRating, Comparator.reverseOrder())
+                        .thenComparing(TopTenMoviesResponseDto::getBoxOffice, Comparator.reverseOrder()))
+                .limit(10)
+                .sorted(Comparator.comparing(TopTenMoviesResponseDto::getBoxOffice, Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+        return list;
     }
 
     //srednia - done
@@ -256,7 +236,9 @@ public class AcademyAwardService {
                 log.info("nie moze byc liczba ocen mmiejsza niz 0");
                 throw new RuntimeException("nie moze byc liczba ocen mmiejsza niz 0");
             }
-            return votesNumber == 0 ? Double.valueOf(providedRate) : (double)(ratingTotalSum + providedRate) / (votesNumber + 1L);
+            return votesNumber == 0
+                    ? Double.valueOf(providedRate)
+                    : (double) (ratingTotalSum + providedRate) / (votesNumber + 1L);
         } else {
             log.info("wartosci tylko pomiedzy 1 a 10");
             throw new RuntimeException("wartosci tylko pomiedzy 1 a 10");

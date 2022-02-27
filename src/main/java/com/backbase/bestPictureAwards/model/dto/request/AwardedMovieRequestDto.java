@@ -1,6 +1,5 @@
 package com.backbase.bestPictureAwards.model.dto.request;
 
-import com.backbase.bestPictureAwards.model.entity.AcademyAward;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
