@@ -27,7 +27,7 @@ public class TopTenMoviesResponseDto {
     public TopTenMoviesResponseDto(AcademyAward academyAward) {
         this.movieTitle = academyAward.getNominee();
         this.year = academyAward.getYear();
-        this.rating = academyAward.getRating();
         this.boxOffice = academyAward.getBoxOffice();
+        this.rating = academyAward.getRating();
     }
 }

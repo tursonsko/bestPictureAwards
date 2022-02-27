@@ -7,6 +7,7 @@ import com.backbase.bestPictureAwards.model.dto.response.RatedMovieResponseDto;
 import com.backbase.bestPictureAwards.model.dto.response.TopTenMoviesResponseDto;
 import com.backbase.bestPictureAwards.model.entity.AcademyAward;
 import com.backbase.bestPictureAwards.service.AcademyAwardService;
+import com.backbase.bestPictureAwards.service.FillUpDatabaseService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,9 +19,11 @@ import java.util.List;
 public class AcademyAwardController {
 
     private final AcademyAwardService academyAwardService;
+    private final FillUpDatabaseService fillUpDatabaseService;
 
-    public AcademyAwardController(AcademyAwardService academyAwardService) {
+    public AcademyAwardController(AcademyAwardService academyAwardService, FillUpDatabaseService fillUpDatabaseService) {
         this.academyAwardService = academyAwardService;
+        this.fillUpDatabaseService = fillUpDatabaseService;
     }
 
     @GetMapping("/{id}")
@@ -57,7 +60,7 @@ public class AcademyAwardController {
     @GetMapping("/fillUpBoxOfficeValue")
     public ResponseEntity<String> fillUpBestPicturesBoxOfficeValue(@RequestParam(name = "apiKey") String apiKey) {
         try {
-            academyAwardService.fillUpBestPicturesBoxOfficeValue(apiKey);
+            fillUpDatabaseService.fillUpBestPicturesBoxOfficeValue(apiKey);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception ex) {
             ex.printStackTrace();
