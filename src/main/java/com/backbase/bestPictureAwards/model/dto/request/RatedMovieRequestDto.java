@@ -7,8 +7,7 @@ import lombok.*;
 @Setter
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
-public class RatedMovieRequestDto {
+public class RatedMovieRequestDto extends MovieRequestDto {
 
     @JsonProperty("movieTitle")
     private String movieTitle;
@@ -16,4 +15,8 @@ public class RatedMovieRequestDto {
     private Integer year;
     @JsonProperty("rate")
     private Integer rate;
+
+    public RatedMovieRequestDto(String movieTitle, Integer year, Integer rate) {
+        super(movieTitle, year, rate);
+    }
 }

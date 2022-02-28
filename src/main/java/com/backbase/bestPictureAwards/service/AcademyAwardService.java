@@ -3,7 +3,9 @@ package com.backbase.bestPictureAwards.service;
 import com.backbase.bestPictureAwards.configuration.ConfigProperties;
 import com.backbase.bestPictureAwards.enums.AwardStatusEnum;
 import com.backbase.bestPictureAwards.exception.AcademyAwardNotFoundException;
+import com.backbase.bestPictureAwards.exception.WrongRateException;
 import com.backbase.bestPictureAwards.model.dto.request.AwardedMovieRequestDto;
+import com.backbase.bestPictureAwards.model.dto.request.MovieRequestDto;
 import com.backbase.bestPictureAwards.model.dto.request.RatedMovieRequestDto;
 import com.backbase.bestPictureAwards.model.dto.response.AwardedMovieResponseDto;
 import com.backbase.bestPictureAwards.model.dto.response.RatedMovieResponseDto;
@@ -32,33 +34,44 @@ public class AcademyAwardService {
         this.configProperties = configProperties;
     }
 
-    public AcademyAward findAcademyAwardById(Long id) {
-        AcademyAward foundRecord = academyAwardRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("record not found"));
-        return foundRecord;
+    public AcademyAward findAcademyAwardById(Long id) throws AcademyAwardNotFoundException {
+        return academyAwardRepository.findById(id)
+                .orElseThrow(() -> new AcademyAwardNotFoundException("Movie not found"));
     }
 
-    public List<AcademyAward> findAllAwardedAndBestPictureCatagory() {
-        return academyAwardRepository.findAcademyAwardByAwardedAndCategory(
-                AwardStatusEnum.valueOf(configProperties.getAwardedTypeYes()), configProperties.getCategoryBestPicture()
-        );
+    public List<AcademyAward> findAllAwardedAndBestPictureCatagory() throws AcademyAwardNotFoundException {
+        List<AcademyAward> allAwardedAndBestPictureMovies = academyAwardRepository.findAcademyAwardByAwardedAndCategory(
+                AwardStatusEnum.valueOf(configProperties.getAwardedTypeYes()), configProperties.getCategoryBestPicture());
+        if (allAwardedAndBestPictureMovies.size() == 0) {
+            throw new AcademyAwardNotFoundException("Movies not found in database ");
+        }
+        return allAwardedAndBestPictureMovies;
     }
 
-    public List<AcademyAward> findAllBestPictureCategoryMovies() {
-        return academyAwardRepository.findAcademyAwardByAwarded(configProperties.getCategoryBestPicture());
+    public AcademyAward findAcademyAwardByNomineeAndYearLikeAndCategory(MovieRequestDto dto) throws AcademyAwardNotFoundException {
+        return academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(
+                        dto.getMovieTitle(), String.valueOf(dto.getYear()), configProperties.getCategoryBestPicture())
+                .orElseThrow(() -> new AcademyAwardNotFoundException("Movie \"" + dto.getMovieTitle() + "\" not found in database "));
+    }
+
+    public List<AcademyAward> findAllBestPictureCategoryMovies() throws AcademyAwardNotFoundException {
+        List<AcademyAward> allBestPiocturesMovies = academyAwardRepository.findAcademyAwardByAwarded(configProperties.getCategoryBestPicture());
+        if (allBestPiocturesMovies.size() == 0) {
+            throw new AcademyAwardNotFoundException("Movies not found in database ");
+        }
+        return allBestPiocturesMovies;
     }
 
     //::::DONE::::sprawdzanie czy wygral czy nie oscara - done
-    public AwardedMovieResponseDto checkIfIsAwardedBestPicture(AwardedMovieRequestDto dto) throws AcademyAwardNotFoundException {
-        AcademyAward movie = academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(
-                dto.getMovieTitle(), String.valueOf(dto.getYear()), configProperties.getCategoryBestPicture())
-                .orElseThrow(() -> new AcademyAwardNotFoundException("Movie \"" + dto.getMovieTitle() + "\" not found in database "));
+    public AwardedMovieResponseDto checkIfIsAwardedBestPicture(MovieRequestDto dto) throws AcademyAwardNotFoundException {
+        AcademyAward movie = findAcademyAwardByNomineeAndYearLikeAndCategory(dto);
         return new AwardedMovieResponseDto(movie);
     }
 
     //::::DONE::::top 10 po ratingu a potem po box office -
-    public List<TopTenMoviesResponseDto> findTenTopRatedMoviesSortedByBoxOfficeValue() {
-        return findAllBestPictureCategoryMovies().stream()
+    public List<TopTenMoviesResponseDto> findTenTopRatedMoviesSortedByBoxOfficeValue() throws AcademyAwardNotFoundException {
+        List<AcademyAward> allMBestPictureMoviesList = findAllBestPictureCategoryMovies();
+        return allMBestPictureMoviesList.stream()
                 .map(TopTenMoviesResponseDto::new)
                 .sorted(Comparator.comparing(TopTenMoviesResponseDto::getRating, Comparator.reverseOrder())
                         .thenComparing(TopTenMoviesResponseDto::getBoxOffice, Comparator.reverseOrder()))
@@ -68,10 +81,9 @@ public class AcademyAwardService {
     }
 
     //::::DONE::::srednia - done
-    public RatedMovieResponseDto giveRateForNomineeToBestPictureMovie(RatedMovieRequestDto dto) throws AcademyAwardNotFoundException {
-        AcademyAward movie = academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(
-                dto.getMovieTitle(), String.valueOf(dto.getYear()), configProperties.getCategoryBestPicture())
-                .orElseThrow(() -> new AcademyAwardNotFoundException("Movie \"" + dto.getMovieTitle() + "\" not found in database "));
+    public RatedMovieResponseDto giveRateForNomineeToBestPictureMovie(MovieRequestDto dto)
+            throws AcademyAwardNotFoundException, WrongRateException {
+        AcademyAward movie = findAcademyAwardByNomineeAndYearLikeAndCategory(dto);
         Long ratingTotalSum = movie.getRatingTotalSum();
         Integer providedRate = dto.getRate();
         Long votesNumber = movie.getVotesNumber();
@@ -83,16 +95,19 @@ public class AcademyAwardService {
         return new RatedMovieResponseDto(movie);
     }
 
-    private Double calculateMovieRating(Long ratingTotalSum, Integer providedRate, Long votesNumber) {
+    private Double calculateMovieRating(Long ratingTotalSum, Integer providedRate, Long votesNumber)
+            throws WrongRateException {
         if (providedRate <= 10 && providedRate >= 1) {
             if (votesNumber < 0) {
-                throw new RuntimeException("nie moze byc liczba ocen mmiejsza niz 0");
+                log.info("Votes Number in database database is less than " + votesNumber);
+                throw new WrongRateException("Sorry, something went wrong, don't worry, this bug has been reported :)");
             }
             return votesNumber == 0
                     ? Double.valueOf(providedRate)
                     : (double) (ratingTotalSum + providedRate) / (votesNumber + 1L);
         } else {
-            throw new RuntimeException("wartosci tylko pomiedzy 1 a 10");
+            throw new WrongRateException("You cannot provide rate " + providedRate
+                    + ". The scale is between 1-10");
         }
     }
 }

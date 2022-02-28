@@ -1,6 +1,7 @@
 package com.backbase.bestPictureAwards.controller;
 
 import com.backbase.bestPictureAwards.exception.AcademyAwardNotFoundException;
+import com.backbase.bestPictureAwards.exception.WrongRateException;
 import com.backbase.bestPictureAwards.model.dto.request.AwardedMovieRequestDto;
 import com.backbase.bestPictureAwards.model.dto.request.RatedMovieRequestDto;
 import com.backbase.bestPictureAwards.model.dto.response.AwardedMovieResponseDto;
@@ -29,33 +30,20 @@ public class AcademyAwardController {
 
     //usunac
     @GetMapping("/{id}")
-    public ResponseEntity<?> findOneBrokerSettingsById(@PathVariable Long id) {
-        try {
-            return new ResponseEntity<>(academyAwardService.findAcademyAwardById(id), HttpStatus.OK);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<?> findOneBrokerSettingsById(@PathVariable Long id) throws AcademyAwardNotFoundException {
+        return new ResponseEntity<>(academyAwardService.findAcademyAwardById(id), HttpStatus.OK);
     }
+
     //usunac
     @GetMapping("/bestPictureAndAwarded")
-    public ResponseEntity<List<AcademyAward>> findAllAwardedAndBestPictureCatagory() {
-        try {
-            return new ResponseEntity<>(academyAwardService.findAllAwardedAndBestPictureCatagory(), HttpStatus.OK);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<List<AcademyAward>> findAllAwardedAndBestPictureCatagory() throws AcademyAwardNotFoundException {
+        return new ResponseEntity<>(academyAwardService.findAllAwardedAndBestPictureCatagory(), HttpStatus.OK);
     }
+
     //usunac
     @GetMapping("/bestPicture")
-    public ResponseEntity<List<AcademyAward>> findAllBestPictureCategoryMovies() {
-        try {
-            return new ResponseEntity<>(academyAwardService.findAllBestPictureCategoryMovies(), HttpStatus.OK);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<List<AcademyAward>> findAllBestPictureCategoryMovies() throws AcademyAwardNotFoundException {
+        return new ResponseEntity<>(academyAwardService.findAllBestPictureCategoryMovies(), HttpStatus.OK);
     }
 
     //todo task 0
@@ -70,31 +58,24 @@ public class AcademyAwardController {
         }
     }
 
-    //todo task 1 - sprobowac tak zrobic kontrolery
+    //task 1
     @PostMapping("/checkIfMovieIsAwarded")
-    public ResponseEntity<AwardedMovieResponseDto> checkIfIsAwardedBestPicture(@RequestBody AwardedMovieRequestDto dto) throws AcademyAwardNotFoundException {
-            return new ResponseEntity<>(academyAwardService.checkIfIsAwardedBestPicture(dto), HttpStatus.OK);
+    public ResponseEntity<AwardedMovieResponseDto> checkIfIsAwardedBestPicture(@RequestBody AwardedMovieRequestDto dto)
+            throws AcademyAwardNotFoundException {
+        return new ResponseEntity<>(academyAwardService.checkIfIsAwardedBestPicture(dto), HttpStatus.OK);
     }
 
     //task 2
     @PostMapping("/rateMovie")
-    public ResponseEntity<RatedMovieResponseDto> giveRateForNomineeToBestPictureMovie(@RequestBody RatedMovieRequestDto dto) {
-        try {
-            return new ResponseEntity<>(academyAwardService.giveRateForNomineeToBestPictureMovie(dto), HttpStatus.OK);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<RatedMovieResponseDto> giveRateForNomineeToBestPictureMovie(@RequestBody RatedMovieRequestDto dto)
+            throws AcademyAwardNotFoundException, WrongRateException {
+        return new ResponseEntity<>(academyAwardService.giveRateForNomineeToBestPictureMovie(dto), HttpStatus.OK);
     }
 
     //task 3
     @GetMapping("/topTenMoviesSortedByBoxOfficeValue")
-    public ResponseEntity<List<TopTenMoviesResponseDto>> findTenTopRatedMoviesSortedByBoxOfficeValue() {
-        try {
-            return new ResponseEntity<>(academyAwardService.findTenTopRatedMoviesSortedByBoxOfficeValue(), HttpStatus.OK);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<List<TopTenMoviesResponseDto>> findTenTopRatedMoviesSortedByBoxOfficeValue()
+            throws AcademyAwardNotFoundException {
+        return new ResponseEntity<>(academyAwardService.findTenTopRatedMoviesSortedByBoxOfficeValue(), HttpStatus.OK);
     }
 }
