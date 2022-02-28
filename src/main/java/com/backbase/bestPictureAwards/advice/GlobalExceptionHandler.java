@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(WrongRateException.class)
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
     public ResponseEntity<Object> handleWrongRateException(WrongRateException ex) {
         return new ResponseEntity<>(new ErrorModel(HttpStatus.BAD_REQUEST.value(),
                 ex.getMessage(), Instant.now()), HttpStatus.BAD_REQUEST);

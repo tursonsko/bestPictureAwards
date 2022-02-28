@@ -1,7 +1,12 @@
 package com.backbase.bestPictureAwards.model.error;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.Instant;
 
+@Getter
+@Setter
 public class ErrorModel {
     private int statusCode;
     private String message;
@@ -10,30 +15,6 @@ public class ErrorModel {
     public ErrorModel(int statusCode, String message, Instant time) {
         this.statusCode = statusCode;
         this.message = message;
-        this.time = time;
-    }
-
-    public int getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(int statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public Instant getTime() {
-        return time;
-    }
-
-    public void setTime(Instant time) {
         this.time = time;
     }
 }

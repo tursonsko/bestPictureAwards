@@ -6,8 +6,9 @@ import com.backbase.bestPictureAwards.model.dto.response.OmdbApiResponseDto;
 import com.backbase.bestPictureAwards.model.entity.AcademyAward;
 import com.backbase.bestPictureAwards.repository.AcademyAwardRepository;
 import com.backbase.bestPictureAwards.util.Utils;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,7 +19,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 public class FillUpDatabaseService {
 
     private final AcademyAwardRepository academyAwardRepository;
@@ -36,15 +36,6 @@ public class FillUpDatabaseService {
         this.httpEntity = httpEntity;
     }
 
-    public List<AcademyAward> findAllBestPictureCategoryMovies() throws AcademyAwardNotFoundException {
-        List<AcademyAward> allBestPiocturesMovies = academyAwardRepository
-                .findAcademyAwardByAwarded(configProperties.getCategoryBestPicture());
-        if (allBestPiocturesMovies.size() == 0) {
-            throw new AcademyAwardNotFoundException("Movies not found in database ");
-        }
-        return allBestPiocturesMovies;
-    }
-
     public void fillUpBestPicturesBoxOfficeValue(String apiKey) throws AcademyAwardNotFoundException {
         List<String> bestPicturesTitles = findAllBestPictureCategoryMovies().stream()
                 .map(AcademyAward::getNominee)
@@ -53,6 +44,15 @@ public class FillUpDatabaseService {
         List<String> movieTitles = new ArrayList<>(ombdResponseDtoMap.keySet()).stream().map(String::toLowerCase)
                 .collect(Collectors.toList());
         updateAllBoxOfficeValue(movieTitles, ombdResponseDtoMap);
+    }
+
+    public List<AcademyAward> findAllBestPictureCategoryMovies() throws AcademyAwardNotFoundException {
+        List<AcademyAward> allBestPiocturesMovies = academyAwardRepository
+                .findAcademyAwardByAwarded(configProperties.getCategoryBestPicture());
+        if (allBestPiocturesMovies.size() == 0) {
+            throw new AcademyAwardNotFoundException("Movies not found in database ");
+        }
+        return allBestPiocturesMovies;
     }
 
     private Map<String, Integer> getAllBoxOfficeValuesFromOmdbApi(List<String> bestPicturesTitles, String apiKey) {

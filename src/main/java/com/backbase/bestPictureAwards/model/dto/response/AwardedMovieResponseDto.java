@@ -4,12 +4,11 @@ import com.backbase.bestPictureAwards.enums.AwardStatusEnum;
 import com.backbase.bestPictureAwards.model.entity.AcademyAward;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
-@ToString
-@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AwardedMovieResponseDto {
 
