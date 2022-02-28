@@ -55,20 +55,13 @@ public class FillUpDatabaseService {
             Map<String, String> params = new HashMap<>();
             params.put(configProperties.getOmdbApiTitleParamName(), movieTitle);
             params.put(configProperties.getOmdbApiKeyParamName(), apiKey);
-            ResponseEntity<OmdbApiResponseDto> response = null;
-            try {
-                response = restTemplateWithConnectionAndReadTimeout.exchange(urlTemplate, HttpMethod.GET,
-                        httpEntity, OmdbApiResponseDto.class, params);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            ResponseEntity<OmdbApiResponseDto> response = restTemplateWithConnectionAndReadTimeout
+                    .exchange(urlTemplate, HttpMethod.GET, httpEntity, OmdbApiResponseDto.class, params);
+            if (response.getBody() != null || response.getStatusCode().is2xxSuccessful()) {
+                String movieTitleToUpdate = response.getBody().getTitle();
+                Integer boxOfficeValueToUpdate = Utils.parseValueToNumeric(response.getBody().getBoxOffice());
+                ombdResponseDtoMap.put(movieTitleToUpdate, boxOfficeValueToUpdate);
             }
-            if (response == null || response.getBody() == null || !response.getStatusCode().is2xxSuccessful()) {
-                throw new RuntimeException();
-            }
-
-            String movieTitleToUpdate = response.getBody().getTitle();
-            Integer boxOfficeValueToUpdate = Utils.parseValueToNumeric(response.getBody().getBoxOffice());
-            ombdResponseDtoMap.put(movieTitleToUpdate, boxOfficeValueToUpdate);
         });
         ombdResponseDtoMap.entrySet().removeIf(curr -> curr.getKey() == null);
         return ombdResponseDtoMap;

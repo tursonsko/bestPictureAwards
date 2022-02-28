@@ -1,5 +1,6 @@
 package com.backbase.bestPictureAwards.controller;
 
+import com.backbase.bestPictureAwards.exception.AcademyAwardNotFoundException;
 import com.backbase.bestPictureAwards.model.dto.request.AwardedMovieRequestDto;
 import com.backbase.bestPictureAwards.model.dto.request.RatedMovieRequestDto;
 import com.backbase.bestPictureAwards.model.dto.response.AwardedMovieResponseDto;
@@ -69,15 +70,10 @@ public class AcademyAwardController {
         }
     }
 
-    //task 1
+    //todo task 1 - sprobowac tak zrobic kontrolery
     @PostMapping("/checkIfMovieIsAwarded")
-    public ResponseEntity<AwardedMovieResponseDto> checkIfIsAwardedBestPicture(@RequestBody AwardedMovieRequestDto dto) {
-        try {
+    public ResponseEntity<AwardedMovieResponseDto> checkIfIsAwardedBestPicture(@RequestBody AwardedMovieRequestDto dto) throws AcademyAwardNotFoundException {
             return new ResponseEntity<>(academyAwardService.checkIfIsAwardedBestPicture(dto), HttpStatus.OK);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
     }
 
     //task 2
