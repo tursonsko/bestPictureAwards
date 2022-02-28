@@ -1,12 +1,11 @@
 package com.backbase.bestPictureAwards.model.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
-@ToString
-@NoArgsConstructor
 public class RatedMovieRequestDto extends MovieRequestDto {
 
     @JsonProperty("movieTitle")
@@ -15,8 +14,4 @@ public class RatedMovieRequestDto extends MovieRequestDto {
     private Integer year;
     @JsonProperty("rate")
     private Integer rate;
-
-    public RatedMovieRequestDto(String movieTitle, Integer year, Integer rate) {
-        super(movieTitle, year, rate);
-    }
 }
