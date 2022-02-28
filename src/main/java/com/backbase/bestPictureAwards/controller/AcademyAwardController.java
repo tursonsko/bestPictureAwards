@@ -46,7 +46,7 @@ public class AcademyAwardController {
         return new ResponseEntity<>(academyAwardService.findAllBestPictureCategoryMovies(), HttpStatus.OK);
     }
 
-    //todo task 0 sprawdzic czy spoko
+    //task 0
     @GetMapping("/fillUpBoxOfficeValue")
     public ResponseEntity<Void> fillUpBestPicturesBoxOfficeValue(@RequestParam(name = "apiKey") String apiKey)
             throws AcademyAwardNotFoundException {
