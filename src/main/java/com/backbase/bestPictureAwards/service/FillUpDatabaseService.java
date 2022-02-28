@@ -28,7 +28,7 @@ public class FillUpDatabaseService {
     private final HttpEntity<?> httpEntity;
 
     public FillUpDatabaseService(AcademyAwardRepository academyAwardRepository, ConfigProperties configProperties,
-                                 RestTemplate restTemplateWithConnectionAndReadTimeout, String urlTemplate, HttpEntity<?> httpEntity) {
+             RestTemplate restTemplateWithConnectionAndReadTimeout, String urlTemplate, HttpEntity<?> httpEntity) {
         this.academyAwardRepository = academyAwardRepository;
         this.configProperties = configProperties;
         this.restTemplateWithConnectionAndReadTimeout = restTemplateWithConnectionAndReadTimeout;
@@ -37,7 +37,8 @@ public class FillUpDatabaseService {
     }
 
     public List<AcademyAward> findAllBestPictureCategoryMovies() throws AcademyAwardNotFoundException {
-        List<AcademyAward> allBestPiocturesMovies = academyAwardRepository.findAcademyAwardByAwarded(configProperties.getCategoryBestPicture());
+        List<AcademyAward> allBestPiocturesMovies = academyAwardRepository
+                .findAcademyAwardByAwarded(configProperties.getCategoryBestPicture());
         if (allBestPiocturesMovies.size() == 0) {
             throw new AcademyAwardNotFoundException("Movies not found in database ");
         }
@@ -72,7 +73,8 @@ public class FillUpDatabaseService {
         return ombdResponseDtoMap;
     }
 
-    private void updateAllBoxOfficeValue(List<String> movieTitles, Map<String, Integer> ombdResponseDtoMap) throws AcademyAwardNotFoundException {
+    private void updateAllBoxOfficeValue(List<String> movieTitles, Map<String, Integer> ombdResponseDtoMap)
+            throws AcademyAwardNotFoundException {
         List<AcademyAward> foundMoviesByTitlesFromOmdbApi = academyAwardRepository
                 .findAcademyAwardByNomineeInAndCategory(movieTitles, configProperties.getCategoryBestPicture());
         foundMoviesByTitlesFromOmdbApi.forEach(movie -> {
