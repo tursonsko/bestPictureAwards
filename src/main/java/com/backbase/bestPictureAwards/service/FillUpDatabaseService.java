@@ -1,6 +1,7 @@
 package com.backbase.bestPictureAwards.service;
 
 import com.backbase.bestPictureAwards.configuration.ConfigProperties;
+import com.backbase.bestPictureAwards.exception.AcademyAwardNotFoundException;
 import com.backbase.bestPictureAwards.model.dto.response.OmdbApiResponseDto;
 import com.backbase.bestPictureAwards.model.entity.AcademyAward;
 import com.backbase.bestPictureAwards.repository.AcademyAwardRepository;
@@ -35,11 +36,15 @@ public class FillUpDatabaseService {
         this.httpEntity = httpEntity;
     }
 
-    public List<AcademyAward> findAllBestPictureCategoryMovies() {
-        return academyAwardRepository.findAcademyAwardByAwarded(configProperties.getCategoryBestPicture());
+    public List<AcademyAward> findAllBestPictureCategoryMovies() throws AcademyAwardNotFoundException {
+        List<AcademyAward> allBestPiocturesMovies = academyAwardRepository.findAcademyAwardByAwarded(configProperties.getCategoryBestPicture());
+        if (allBestPiocturesMovies.size() == 0) {
+            throw new AcademyAwardNotFoundException("Movies not found in database ");
+        }
+        return allBestPiocturesMovies;
     }
 
-    public void fillUpBestPicturesBoxOfficeValue(String apiKey) {
+    public void fillUpBestPicturesBoxOfficeValue(String apiKey) throws AcademyAwardNotFoundException {
         List<String> bestPicturesTitles = findAllBestPictureCategoryMovies().stream()
                 .map(AcademyAward::getNominee)
                 .collect(Collectors.toList());
@@ -67,7 +72,7 @@ public class FillUpDatabaseService {
         return ombdResponseDtoMap;
     }
 
-    private void updateAllBoxOfficeValue(List<String> movieTitles, Map<String, Integer> ombdResponseDtoMap) {
+    private void updateAllBoxOfficeValue(List<String> movieTitles, Map<String, Integer> ombdResponseDtoMap) throws AcademyAwardNotFoundException {
         List<AcademyAward> foundMoviesByTitlesFromOmdbApi = academyAwardRepository
                 .findAcademyAwardByNomineeInAndCategory(movieTitles, configProperties.getCategoryBestPicture());
         foundMoviesByTitlesFromOmdbApi.forEach(movie -> {
@@ -78,7 +83,7 @@ public class FillUpDatabaseService {
         changeAllBoxOfficeNullValues();
     }
 
-    private void changeAllBoxOfficeNullValues() {
+    private void changeAllBoxOfficeNullValues() throws AcademyAwardNotFoundException {
         List<AcademyAward> listToUpdateNullBoxOfficeValues = findAllBestPictureCategoryMovies().stream()
                 .filter(academyAward -> academyAward.getBoxOffice() == null).collect(Collectors.toList());
         listToUpdateNullBoxOfficeValues.forEach(academyAward -> academyAward.setBoxOffice(0));

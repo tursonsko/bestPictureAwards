@@ -46,16 +46,12 @@ public class AcademyAwardController {
         return new ResponseEntity<>(academyAwardService.findAllBestPictureCategoryMovies(), HttpStatus.OK);
     }
 
-    //todo task 0
+    //todo task 0 sprawdzic czy spoko
     @GetMapping("/fillUpBoxOfficeValue")
-    public ResponseEntity<String> fillUpBestPicturesBoxOfficeValue(@RequestParam(name = "apiKey") String apiKey) {
-        try {
-            fillUpDatabaseService.fillUpBestPicturesBoxOfficeValue(apiKey);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    public ResponseEntity<Void> fillUpBestPicturesBoxOfficeValue(@RequestParam(name = "apiKey") String apiKey)
+            throws AcademyAwardNotFoundException {
+        fillUpDatabaseService.fillUpBestPicturesBoxOfficeValue(apiKey);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     //task 1
