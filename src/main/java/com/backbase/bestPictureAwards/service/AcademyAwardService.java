@@ -21,6 +21,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AcademyAwardService {
 
+    private static final Integer DIGITS_PLACES = 1;
+
     private final AcademyAwardRepository academyAwardRepository;
     private final ConfigProperties configProperties;
 
@@ -37,27 +39,23 @@ public class AcademyAwardService {
     }
 
     public List<AcademyAward> findAllAwardedAndBestPictureCatagory() {
-        return academyAwardRepository.findAcademyAwardByAwardedAndCategory(AwardStatusEnum.valueOf(configProperties.getAwardedTypeYes()), configProperties.getCategoryBestPicture());
+        return academyAwardRepository.findAcademyAwardByAwardedAndCategory(
+                AwardStatusEnum.valueOf(configProperties.getAwardedTypeYes()), configProperties.getCategoryBestPicture()
+        );
     }
 
     public List<AcademyAward> findAllBestPictureCategoryMovies() {
         return academyAwardRepository.findAcademyAwardByAwarded(configProperties.getCategoryBestPicture());
     }
 
-    //testowe - 4 rekordy - 2 z boxOffice, 2 z wartoscia N/A
-    public List<AcademyAward> findAllAwardedTestAndBestPictureCatagory() {
-        return academyAwardRepository.findAcademyAwardByAwardedAndCategory(AwardStatusEnum.valueOf(configProperties.getAwardedTypeTest()), configProperties.getCategoryBestPicture());
-    }
-
-
     //::::DONE::::sprawdzanie czy wygral czy nie oscara - done
     public AwardedMovieResponseDto checkIfIsAwardedBestPicture(AwardedMovieRequestDto dto) {
-        AcademyAward movie = academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(dto.getMovieTitle(), String.valueOf(dto.getYear()), configProperties.getCategoryBestPicture())
+        AcademyAward movie = academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(
+                dto.getMovieTitle(), String.valueOf(dto.getYear()), configProperties.getCategoryBestPicture())
                 .orElseThrow(() -> new RuntimeException("Movie not found"));
         log.info(movie.getNominee() + " -> " + movie.getAwarded().name());
         return new AwardedMovieResponseDto(movie);
     }
-
 
     //::::DONE::::top 10 po ratingu a potem po box office -
     public List<TopTenMoviesResponseDto> findTenTopRatedMoviesSortedByBoxOfficeValue() {
@@ -72,12 +70,13 @@ public class AcademyAwardService {
 
     //::::DONE::::srednia - done
     public RatedMovieResponseDto giveRateForNomineeToBestPictureMovie(RatedMovieRequestDto dto) {
-        AcademyAward movie = academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(dto.getMovieTitle(), String.valueOf(dto.getYear()), configProperties.getCategoryBestPicture())
+        AcademyAward movie = academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(
+                dto.getMovieTitle(), String.valueOf(dto.getYear()), configProperties.getCategoryBestPicture())
                 .orElseThrow(() -> new RuntimeException("Movie not found"));
         Long ratingTotalSum = movie.getRatingTotalSum();
         Integer providedRate = dto.getRate();
         Long votesNumber = movie.getVotesNumber();
-        Double newRating = Utils.round(calculateMovieRating(ratingTotalSum, providedRate, votesNumber), 1);
+        Double newRating = Utils.round(calculateMovieRating(ratingTotalSum, providedRate, votesNumber), DIGITS_PLACES);
         movie.setRating(newRating);
         movie.setRatingTotalSum(ratingTotalSum + providedRate);
         movie.setVotesNumber(votesNumber + 1L);

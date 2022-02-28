@@ -26,6 +26,7 @@ public class AcademyAwardController {
         this.fillUpDatabaseService = fillUpDatabaseService;
     }
 
+    //usunac
     @GetMapping("/{id}")
     public ResponseEntity<?> findOneBrokerSettingsById(@PathVariable Long id) {
         try {
@@ -35,7 +36,7 @@ public class AcademyAwardController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
+    //usunac
     @GetMapping("/bestPictureAndAwarded")
     public ResponseEntity<List<AcademyAward>> findAllAwardedAndBestPictureCatagory() {
         try {
@@ -45,7 +46,7 @@ public class AcademyAwardController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-
+    //usunac
     @GetMapping("/bestPicture")
     public ResponseEntity<List<AcademyAward>> findAllBestPictureCategoryMovies() {
         try {
