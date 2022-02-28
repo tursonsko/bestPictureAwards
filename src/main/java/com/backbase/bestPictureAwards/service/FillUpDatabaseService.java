@@ -69,7 +69,7 @@ public class FillUpDatabaseService {
                 ombdResponseDtoMap.put(movieTitleToUpdate, boxOfficeValueToUpdate);
             }
         });
-        ombdResponseDtoMap.entrySet().removeIf(curr -> curr.getKey() == null);
+        ombdResponseDtoMap.entrySet().removeIf(omdbResponseDto -> omdbResponseDto.getKey() == null);
         return ombdResponseDtoMap;
     }
 
