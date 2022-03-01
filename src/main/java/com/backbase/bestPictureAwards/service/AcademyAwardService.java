@@ -18,6 +18,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service used to accomplish 3 challenge tasks for Backbase
+ */
 @Service
 @Slf4j
 public class AcademyAwardService {
@@ -32,26 +35,26 @@ public class AcademyAwardService {
         this.configProperties = configProperties;
     }
 
-    public AcademyAward findAcademyAwardById(Long id) throws AcademyAwardNotFoundException {
-        return academyAwardRepository.findById(id)
-                .orElseThrow(() -> new AcademyAwardNotFoundException("Movie not found"));
-    }
-
-    public List<AcademyAward> findAllAwardedAndBestPictureCatagory() throws AcademyAwardNotFoundException {
-        List<AcademyAward> allAwardedAndBestPictureMovies = academyAwardRepository.findAcademyAwardByAwardedAndCategory(
-                AwardStatusEnum.valueOf(configProperties.getAwardedTypeYes()), configProperties.getCategoryBestPicture());
-        if (allAwardedAndBestPictureMovies.size() == 0) {
-            throw new AcademyAwardNotFoundException("Movies not found in database ");
-        }
-        return allAwardedAndBestPictureMovies;
-    }
-
+    /**
+     * Method returns from database movie which has category "Best Picture".
+     * Movie is find by title and by year of production.
+     *
+     * @param dto MovieRequestDto - DTO used to REST requests
+     * @return AcademyAward single entity object representation from academy_awards table
+     * @throws AcademyAwardNotFoundException
+     */
     public AcademyAward findAcademyAwardByNomineeAndYearLikeAndCategory(MovieRequestDto dto) throws AcademyAwardNotFoundException {
         return academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(
                         dto.getMovieTitle(), String.valueOf(dto.getYear()), configProperties.getCategoryBestPicture())
                 .orElseThrow(() -> new AcademyAwardNotFoundException("Movie \"" + dto.getMovieTitle() + "\" not found in database "));
     }
 
+    /**
+     * Method to fin all movies from academy_award table with category "Best Picture"
+     *
+     * @return List<AcademyAward>
+     * @throws AcademyAwardNotFoundException
+     */
     public List<AcademyAward> findAllBestPictureCategoryMovies() throws AcademyAwardNotFoundException {
         List<AcademyAward> allBestPiocturesMovies = academyAwardRepository.findAcademyAwardByAwarded(configProperties.getCategoryBestPicture());
         if (allBestPiocturesMovies.size() == 0) {
@@ -61,24 +64,45 @@ public class AcademyAwardService {
     }
 
     //::::DONE::::sprawdzanie czy wygral czy nie oscara - done
+
+    /**
+     * Method to check if selected movie was awarded with Oscar
+     * @param dto MovieRequestDto
+     * @return AwardedMovieResponseDto
+     * @throws AcademyAwardNotFoundException
+     */
     public AwardedMovieResponseDto checkIfIsAwardedBestPicture(MovieRequestDto dto) throws AcademyAwardNotFoundException {
         AcademyAward movie = findAcademyAwardByNomineeAndYearLikeAndCategory(dto);
         return new AwardedMovieResponseDto(movie);
     }
 
     //::::DONE::::top 10 po ratingu a potem po box office -
+
+    /**
+     * Method used to get top-10 rated movies from academy_award table with category "Best Picture"
+     * ordered by "Box Office" value
+     * @return List<TopTenMoviesResponseDto>
+     * @throws AcademyAwardNotFoundException
+     */
     public List<TopTenMoviesResponseDto> findTenTopRatedMoviesSortedByBoxOfficeValue() throws AcademyAwardNotFoundException {
         List<AcademyAward> allMBestPictureMoviesList = findAllBestPictureCategoryMovies();
         return allMBestPictureMoviesList.stream()
                 .map(TopTenMoviesResponseDto::new)
-                .sorted(Comparator.comparing(TopTenMoviesResponseDto::getRating, Comparator.reverseOrder())
-                        .thenComparing(TopTenMoviesResponseDto::getBoxOffice, Comparator.reverseOrder()))
+                .sorted(Comparator.comparing(TopTenMoviesResponseDto::getRating, Comparator.reverseOrder()))
                 .limit(10)
                 .sorted(Comparator.comparing(TopTenMoviesResponseDto::getBoxOffice, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
     }
 
     //::::DONE::::srednia - done
+
+    /**
+     * Method allows user to give rate for selected movie from academy_award table with category "Best Picture"
+     * @param dto MovieRequestDto
+     * @return RatedMovieResponseDto
+     * @throws AcademyAwardNotFoundException
+     * @throws WrongRateException
+     */
     public RatedMovieResponseDto giveRateForNomineeToBestPictureMovie(MovieRequestDto dto)
             throws AcademyAwardNotFoundException, WrongRateException {
         AcademyAward movie = findAcademyAwardByNomineeAndYearLikeAndCategory(dto);
@@ -93,6 +117,15 @@ public class AcademyAwardService {
         return new RatedMovieResponseDto(movie);
     }
 
+    /**
+     * Helper method for giveRateForNomineeToBestPictureMovie() to calculate average
+     * rating based on past and new on get from user.
+     * @param ratingTotalSum Long
+     * @param providedRate Integer
+     * @param votesNumber Long
+     * @return Double (new average value of rating)
+     * @throws WrongRateException
+     */
     private Double calculateMovieRating(Long ratingTotalSum, Integer providedRate, Long votesNumber)
             throws WrongRateException {
         if (providedRate <= 10 && providedRate >= 1) {

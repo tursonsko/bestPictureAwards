@@ -5,6 +5,9 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * Configuration class with constant values stored in application.yml file
+ */
 @Configuration
 @ConfigurationProperties(prefix = "consts")
 @Getter

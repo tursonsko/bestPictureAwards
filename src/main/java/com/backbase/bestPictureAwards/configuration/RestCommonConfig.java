@@ -14,6 +14,9 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.time.Duration;
 import java.util.List;
 
+/**
+ * Configuration class with all used to REST operations tools
+ */
 @Configuration
 public class RestCommonConfig {
 

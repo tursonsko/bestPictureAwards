@@ -8,9 +8,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.Instant;
 
+/**
+ * Global handler for exceptions with custom error model
+ */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -26,6 +30,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Object> handleWrongRateException(WrongRateException ex) {
         return new ResponseEntity<>(new ErrorModel(HttpStatus.BAD_REQUEST.value(),
                 ex.getMessage(), Instant.now()), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    @ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+    public ResponseEntity<Object> handleHttpClientErrorException(HttpClientErrorException ex) {
+        return new ResponseEntity<>(new ErrorModel(HttpStatus.UNAUTHORIZED.value(),
+                ex.getMessage(), Instant.now()), HttpStatus.UNAUTHORIZED);
     }
 
 }

@@ -4,6 +4,9 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.regex.Pattern;
 
+/**
+ * Utils static methods separated from business logic
+ */
 public final class Utils {
 
     public static final String EMPTY_STRING = "";
@@ -20,23 +23,14 @@ public final class Utils {
         return str == null || str.length() == 0;
     }
 
-    public static String replaceSpacesInRequestParamValue(String text) {
-        if (isStringNullOrEmpty(text)) {
-            return EMPTY_STRING;
-        }
-        return text.replaceAll("\\s+","+");
-    }
-
     public static Integer parseValueToNumeric(String value) {
         if (isStringNullOrEmpty(value)) {
             return 0;
         }
-
         String parsedValue = value.replaceAll("[^0-9]", EMPTY_STRING);
         if (isNumeric(parsedValue)) {
             return Integer.parseInt(parsedValue.replaceAll("[^0-9]", EMPTY_STRING));
         }
-
         return 0;
     }
 

@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO used to receive via REST data from Omdb Api
+ */
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)

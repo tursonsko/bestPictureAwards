@@ -7,6 +7,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO for response with info about movie if is or not awarded with Oscar
+ */
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)

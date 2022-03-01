@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * DTO used to reach info abou updated movie with new rate
+ */
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)

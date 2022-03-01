@@ -5,6 +5,9 @@ import lombok.Setter;
 
 import java.time.Instant;
 
+/**
+ * Error Model to return fromatted Exceptions
+ */
 @Getter
 @Setter
 public class ErrorModel {
