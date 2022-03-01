@@ -1,8 +1,6 @@
 spring:
   datasource:
-    #prod
     #url: jdbc:mysql://omdb-db:3306/omdb-db
-    #local
     url: jdbc:mysql://localhost:3307/omdb-db
     username: root
     password: haselko
@@ -18,5 +16,3 @@ consts:
   omdbApiUrl: "https://www.omdbapi.com/"
   omdbApiTitleParamName: "t"
   omdbApiKeyParamName: "apikey"
-#  api_key: ca34112e -->> nie bedzie w propertisach, testowo tylko mniej niz 500 zapytan
-# apikey: 4a9139fc 1000
