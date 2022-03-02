@@ -1,0 +1,1 @@
+At the moment of a significant increase in the number of users, I would pay attention to the number of inquiries to the database to limit them to a minimum in order to avoid unexpected behavior of the application during increased traffic during particularly peak moments.
