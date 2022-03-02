@@ -1,0 +1,143 @@
+{
+	"info": {
+		"_postman_id": "aac1c396-cd91-46a3-bc4a-b5d341804db4",
+		"name": "OMDB",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "[omdb api] find by title",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://www.omdbapi.com/?t=kill_bill&apikey=ca34112e",
+					"protocol": "http",
+					"host": [
+						"www",
+						"omdbapi",
+						"com"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "t",
+							"value": "kill_bill"
+						},
+						{
+							"key": "apikey",
+							"value": "ca34112e"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[task_0_app] fill up boxOffice value",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/v1/fillUpBoxOfficeValue?apiKey=ca34112e",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"fillUpBoxOfficeValue"
+					],
+					"query": [
+						{
+							"key": "apiKey",
+							"value": "ca34112e"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[task_1_app] check if movie is awarded",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"movieTitle\": \"L.A. Confidential\",\r\n    \"year\": 1997\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/v1/checkIfMovieIsAwarded",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"checkIfMovieIsAwarded"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[task_2_app] rate movie (1-10)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"movieTitle\": \"L.A. Confidential\",\r\n    \"year\": 1997,\r\n    \"rate\": 6\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/api/v1/rateMovie",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"rateMovie"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[task_3_app] get top 10 movies",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/api/v1/topTenMoviesSortedByBoxOfficeValue",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"topTenMoviesSortedByBoxOfficeValue"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
