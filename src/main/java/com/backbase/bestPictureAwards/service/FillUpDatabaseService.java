@@ -85,7 +85,7 @@ public class FillUpDatabaseService {
      * @return Map<String, Integer> - all found by movie title box_office values grouped in Map -
      * (Key(String) - Movie Title; Value(Integer) - Box Office value of movie)
      */
-    private Map<String, Integer> getAllBoxOfficeValuesFromOmdbApi(List<String> bestPicturesTitles, String apiKey) {
+    public Map<String, Integer> getAllBoxOfficeValuesFromOmdbApi(List<String> bestPicturesTitles, String apiKey) {
         Map<String, Integer> ombdResponseDtoMap = new HashMap<>();
         bestPicturesTitles.forEach(movieTitle -> {
             Map<String, String> params = new HashMap<>();
@@ -108,7 +108,7 @@ public class FillUpDatabaseService {
      *
      * @param ombdResponseDtoMap Map<String, Integer>
      */
-    private void removeNullKeysFromOmdbResponseMap(Map<String, Integer> ombdResponseDtoMap) {
+    public void removeNullKeysFromOmdbResponseMap(Map<String, Integer> ombdResponseDtoMap) {
         ombdResponseDtoMap.entrySet().removeIf(omdbResponseDto -> omdbResponseDto.getKey() == null);
     }
 
@@ -123,7 +123,7 @@ public class FillUpDatabaseService {
      *                           method uses only Key (Box Office values) from this map
      * @throws AcademyAwardNotFoundException
      */
-    private void updateAllBoxOfficeValue(List<String> movieTitles, Map<String, Integer> ombdResponseDtoMap)
+    public void updateAllBoxOfficeValue(List<String> movieTitles, Map<String, Integer> ombdResponseDtoMap)
             throws AcademyAwardNotFoundException {
         List<AcademyAward> foundMoviesByTitlesFromOmdbApi = academyAwardRepository
                 .findAcademyAwardByNomineeInAndCategory(movieTitles, configProperties.getCategoryBestPicture());
@@ -142,7 +142,7 @@ public class FillUpDatabaseService {
      *
      * @throws AcademyAwardNotFoundException
      */
-    private void changeAllBoxOfficeNullValues() throws AcademyAwardNotFoundException {
+    public void changeAllBoxOfficeNullValues() throws AcademyAwardNotFoundException {
         List<AcademyAward> listToUpdateNullBoxOfficeValues = findAllBestPictureCategoryMovies().stream()
                 .filter(academyAward -> academyAward.getBoxOffice() == null).collect(Collectors.toList());
         listToUpdateNullBoxOfficeValues.forEach(academyAward -> academyAward.setBoxOffice(0));

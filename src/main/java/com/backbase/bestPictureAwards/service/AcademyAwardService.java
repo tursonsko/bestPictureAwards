@@ -1,7 +1,6 @@
 package com.backbase.bestPictureAwards.service;
 
 import com.backbase.bestPictureAwards.configuration.ConfigProperties;
-import com.backbase.bestPictureAwards.enums.AwardStatusEnum;
 import com.backbase.bestPictureAwards.exception.AcademyAwardNotFoundException;
 import com.backbase.bestPictureAwards.exception.WrongRateException;
 import com.backbase.bestPictureAwards.model.dto.request.MovieRequestDto;
@@ -126,7 +125,7 @@ public class AcademyAwardService {
      * @return Double (new average value of rating)
      * @throws WrongRateException
      */
-    private Double calculateMovieRating(Long ratingTotalSum, Integer providedRate, Long votesNumber)
+    public Double calculateMovieRating(Long ratingTotalSum, Integer providedRate, Long votesNumber)
             throws WrongRateException {
         if (providedRate <= 10 && providedRate >= 1) {
             if (votesNumber < 0) {
