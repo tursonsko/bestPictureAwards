@@ -17,8 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -114,4 +113,12 @@ public class FillUpDatabaseServiceTest {
 
     }
 
+    @Test
+    public void testRemoveNullKeysFromOmdbResponseMap() {
+        Map<String, Integer> ombdResponseDtoMap = new HashMap<>();
+        ombdResponseDtoMap.put(null, 1111);
+        ombdResponseDtoMap.put(null, 1111);
+        fillUpDatabaseService.removeNullKeysFromOmdbResponseMap(ombdResponseDtoMap);
+        assertTrue(ombdResponseDtoMap.isEmpty());
+    }
 }
