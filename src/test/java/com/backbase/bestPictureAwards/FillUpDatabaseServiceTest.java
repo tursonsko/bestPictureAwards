@@ -5,6 +5,8 @@ import com.backbase.bestPictureAwards.exception.AcademyAwardNotFoundException;
 import com.backbase.bestPictureAwards.model.entity.AcademyAward;
 import com.backbase.bestPictureAwards.repository.AcademyAwardRepository;
 import com.backbase.bestPictureAwards.service.FillUpDatabaseService;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -26,7 +28,6 @@ public class FillUpDatabaseServiceTest {
     @Mock
     private AcademyAwardRepository academyAwardRepository;
 
-    @Mock
     private AcademyAward academyAward = new AcademyAward();
 
     @Mock
@@ -34,6 +35,16 @@ public class FillUpDatabaseServiceTest {
 
     @InjectMocks
     private FillUpDatabaseService fillUpDatabaseService;
+
+    @Before
+    public void setUp() {
+        academyAward = new AcademyAward();
+    }
+
+    @After
+    public void tearDown() {
+        academyAwardRepository.deleteAll();
+    }
 
     @Test
     public void testFindAllBestPictureCategoryMoviesThrowAcademyAwardNotFoundException() {

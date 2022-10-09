@@ -10,6 +10,8 @@ import com.backbase.bestPictureAwards.model.dto.response.TopTenMoviesResponseDto
 import com.backbase.bestPictureAwards.model.entity.AcademyAward;
 import com.backbase.bestPictureAwards.repository.AcademyAwardRepository;
 import com.backbase.bestPictureAwards.service.AcademyAwardService;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -34,13 +36,25 @@ public class AcademyAwardServiceTest {
     private MovieRequestDto movieRequestDto;
 
     @Mock
-    private AcademyAward academyAward = new AcademyAward();
+    private AcademyAward academyAward;
 
     @Mock
     private ConfigProperties configProperties;
 
     @InjectMocks
     private AcademyAwardService academyAwardService;
+
+    @Before
+    public void setUp() {
+        academyAward = new AcademyAward();
+    }
+
+    @After
+    public void tearDown() {
+        academyAwardRepository.deleteAll();
+    }
+
+
 
     @Test
     public void testFindAcademyAwardByNomineeAndYearLikeAndCategoryReturnAcademyAward() throws AcademyAwardNotFoundException {
@@ -83,70 +97,12 @@ public class AcademyAwardServiceTest {
                 .isThrownBy(() -> academyAwardService.findAllBestPictureCategoryMovies());
     }
 
-    @Test
-    public void testCheckIfIsAwardedBestPictureReturnNewAwardedMovie() throws AcademyAwardNotFoundException {
-
-        when(academyAward.getAwarded()).thenReturn(AwardStatusEnum.YES);
-        when(academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(any(), any(), any()))
-                .thenReturn(Optional.of(academyAward));
-
-        academyAwardService.checkIfIsAwardedBestPicture(movieRequestDto);
-        //awarded nie jest przypisane na stale
-        //assertEquals("An Oscar-winning movie", awardedMovieResponseDto.getAwarded());
-
-        verify(academyAward, times(1)).getNominee();
-        verify(academyAward, times(1)).getYear();
-        verify(academyAward, times(1)).getCategory();
-        verify(academyAward, times(1)).getAwarded();
-    }
 
     @Test
     public void testFindTenTopRatedMoviesSortedByBoxOfficeValueThrowsException() {
 
         assertThatExceptionOfType(AcademyAwardNotFoundException.class)
                 .isThrownBy(() -> academyAwardService.findTenTopRatedMoviesSortedByBoxOfficeValue());
-    }
-
-    @Test
-    public void testFindTenTopRatedMoviesSortedByBoxOfficeValueReturnCorrectList() throws AcademyAwardNotFoundException {
-        //do pelnego przetestowania stworzyc 11 obiektow z wartosciami i porownac result list czy usunelo poprawny element
-
-        AcademyAward academyAward1 = new AcademyAward();
-        academyAward1.setRating(1.0);
-        academyAward1.setBoxOffice(100);
-
-        AcademyAward academyAward2 = new AcademyAward();
-        academyAward2.setRating(2.0);
-        academyAward2.setBoxOffice(200);
-
-        AcademyAward academyAward3 = new AcademyAward();
-        academyAward3.setRating(2.0);
-        academyAward3.setBoxOffice(300);
-
-        AcademyAward academyAward4 = new AcademyAward();
-        academyAward4.setRating(4.0);
-        academyAward4.setBoxOffice(400);
-
-        List<AcademyAward> allBestGivenMovies = new ArrayList<>();
-        List<AcademyAward> mockList = new ArrayList<>(List.of(
-                academyAward, academyAward, academyAward, academyAward, academyAward, academyAward, academyAward)
-        );
-        allBestGivenMovies.add(academyAward1);
-        allBestGivenMovies.add(academyAward2);
-        allBestGivenMovies.add(academyAward3);
-        allBestGivenMovies.add(academyAward4);
-        allBestGivenMovies.addAll(mockList);
-
-        when(academyAwardRepository.findAcademyAwardByAwarded(configProperties.getCategoryBestPicture()))
-                .thenReturn(allBestGivenMovies);
-
-        List<TopTenMoviesResponseDto> expectedLimitedSortedList = academyAwardService
-                .findTenTopRatedMoviesSortedByBoxOfficeValue();
-
-        assertNotEquals(allBestGivenMovies, expectedLimitedSortedList);
-        assertTrue(expectedLimitedSortedList.size() < 11);
-        assertTrue(expectedLimitedSortedList.get(0).getBoxOffice() > expectedLimitedSortedList.get(1).getBoxOffice());
-
     }
 
     @Test
@@ -214,25 +170,4 @@ public class AcademyAwardServiceTest {
                 .giveRateForNomineeToBestPictureMovie(movieRequestDto));
     }
 
-    @Test
-    public void testGiveRateForNomineeToBestPictureMovie() throws AcademyAwardNotFoundException, WrongRateException {
-
-        Long ratingTotalSum = 72L;
-        Integer providedRate = 8;
-        Long votesNumber = 9L;
-
-        when(academyAwardRepository.findAcademyAwardByNomineeAndYearLikeAndCategory(any(), any(), any()))
-                .thenReturn(Optional.of(academyAward));
-
-        when(academyAward.getRatingTotalSum()).thenReturn(ratingTotalSum);
-        when(movieRequestDto.getRate()).thenReturn(providedRate);
-        when(academyAward.getRatingTotalSum()).thenReturn(votesNumber);
-
-        RatedMovieResponseDto resultRateMovieResponseDto = academyAwardService
-                .giveRateForNomineeToBestPictureMovie(movieRequestDto);
-
-        verify(academyAwardRepository,times(1)).save(academyAward);
-        assertNotNull(resultRateMovieResponseDto);
-
-    }
 }
